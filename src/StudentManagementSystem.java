@@ -114,6 +114,8 @@ public class StudentManagementSystem  {
             studentRecordHandlingSystem.appendToFile(student);
         }catch(IOException e){
             System.out.println("hi");
+        }catch(NumberFormatException e){
+            System.out.println("Error occurred while reading the file.");
         }
 
     }

@@ -7,7 +7,7 @@ public class StudentRecordHandlingSystem {
     private final String studentRecordBook = "studentRecordBook.txt";
 
     //Method to write details of a student to a file
-    public void appendToFile(Student student) throws IOException {
+    public void appendToFile(Student student) throws IOException, NumberFormatException {
 
         FileWriter fw = null;
         int studentId = student.getStudentId();
@@ -16,13 +16,14 @@ public class StudentRecordHandlingSystem {
 
         try{
             fw = new FileWriter(studentRecordBook, true);
-            String newRecord = "Student id:" + studentId + ", Student Name:" + studentName+", Age:" +age;
+            String newRecord = "Student id:" + studentId + ", Student Name:" + studentName+", Age:" +age+"\n";
 
             fw.write(newRecord);
 
         }catch(IOException e){
             System.out.println("An error occurred while writing to the file");
-        }finally{
+        }
+        finally{
             if(fw != null){
                 fw.close();
             }
@@ -85,6 +86,8 @@ public class StudentRecordHandlingSystem {
             return studentArrayFromExistingObjects;
         }catch (IOException e){
             throw new IOException();
+        }catch (NumberFormatException e){
+            throw new NumberFormatException("Number format exception");
         }finally {
             if(fr != null){
                 fr.close();
