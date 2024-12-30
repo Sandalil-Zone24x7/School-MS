@@ -1,7 +1,6 @@
 import java.time.LocalDate;
 
 public class Student {
-
     private int studentId;
     private String studentName;
     private int age;
@@ -35,4 +34,5 @@ public class Student {
     public void setAge(int age) {
         this.age = age;
     }
+
 }

@@ -17,7 +17,6 @@ public class StudentRecordHandlingSystem {
         try{
             fw = new FileWriter(studentRecordBook, true);
             String newRecord = "Student id:" + studentId + ", Student Name:" + studentName+", Age:" +age+"\n";
-
             fw.write(newRecord);
 
         }catch(IOException e){
@@ -32,8 +31,6 @@ public class StudentRecordHandlingSystem {
 
     //Method to read student records
     public void readFromFile() throws IOException{
-
-
         FileReader fr = null;
         File fileToRead = new File(studentRecordBook);
         ArrayList<Student> studentArrayFromExistingObjects = new ArrayList<>();
@@ -106,7 +103,7 @@ public class StudentRecordHandlingSystem {
                 int studentId = student.getStudentId();
                 String studentName = student.getStudentName();
                 int age = student.getAge();
-                String recordToWrite = "Student id:" + studentId + ", Student Name:" + studentName+", Age:" +age;
+                String recordToWrite = "Student id:" + studentId + ", Student Name:" + studentName+", Age:" +age+"\n";
                 fw.write(recordToWrite);
             }
         }catch (IOException e){

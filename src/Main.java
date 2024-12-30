@@ -23,13 +23,13 @@ public class Main {
         Thread displayThread2 = new Thread(studentDisplaySystem);
 
         insertionThread1.start();
-//        insertionThread2.start();
+        insertionThread2.start();
 
-//        updateThread1.start();
-//        updateThread2.start();
+        updateThread1.start();
+        updateThread2.start();
 
-//        displayThread1.start();
-//        displayThread2.start();
+        displayThread1.start();
+        displayThread2.start();
 
 //        Thread removalThread1 = new Thread(studentRemovalSystem);
 //        Thread removalThread2 = new Thread(studentRemovalSystem);

@@ -22,12 +22,14 @@ public class StudentManagementSystem  {
 
     //classes to implement runnable interfaces for multiple threads
     class StudentUpdateSystem implements Runnable{
-        public void run(){
+        public synchronized void run(){
             try{
-                Student newStudent = createStudent();
-                addNewStudentToTheSystem(newStudent);
+                Student studentToUpdate = getStudentFromId();
+                updateStudentDetails(studentToUpdate);
+            }catch(StudentNotFoundException e){
+                System.out.println("An error occurred:" + e.getMessage());
             }catch(Exception e){
-                e.printStackTrace();
+                System.out.println("An error occurred");
             }
         }
     }
@@ -37,8 +39,12 @@ public class StudentManagementSystem  {
             try{
                 Student newStudent = createStudent();
                 addNewStudentToTheSystem(newStudent);
+            }catch(InputMismatchException e){
+                System.out.println("An error occurred:" + e.getMessage());
+            }catch(DuplicateStudentException e){
+                System.out.println("An error occurred:" + e.getMessage());
             }catch(Exception e){
-                e.printStackTrace();
+                System.out.println("Error");
             }
         }
     }
@@ -66,19 +72,34 @@ public class StudentManagementSystem  {
     public void populate() throws IOException{
         ArrayList<Student> studentList = studentRecordHandlingSystem.getExistingStudents();
         setStudentList(studentList);
+        studentList.forEach(student -> {
+            addIdToTheSet(student.getStudentId());
+            addIdAndStudentToTheMap(student.getStudentId(), student);
+
+        });
+
 
     }
 
     //create a new Student.
-    private Student createStudent(){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter student name:");
-        String studentName = scanner.nextLine();
-        System.out.println("Enter student Id:");
-        int studentId = scanner.nextInt();
-        System.out.println("Enter student age:");
-        int age = scanner.nextInt();
-        return new Student(studentId, studentName, age);
+    private synchronized Student createStudent() throws InputMismatchException, DuplicateStudentException{
+        try {
+            System.out.println("Registering a new student.");
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter student name:");
+            String studentName = scanner.nextLine();
+            System.out.println("Enter student Id:");
+            int studentId = scanner.nextInt();
+            scanner.nextLine();
+            if(idSet.contains(studentId)){
+                throw new DuplicateStudentException("The index number already exists.");
+            }
+            System.out.println("Enter student age:");
+            int age = scanner.nextInt();
+            return new Student(studentId, studentName, age);
+        }catch(InputMismatchException e){
+            throw new InputMismatchException("Integer required.");
+        }
     }
 
     //add student to the list.
@@ -120,38 +141,43 @@ public class StudentManagementSystem  {
 
     }
     //Get the student from the id using map.
-    private Student getStudentFromId(){
+    private synchronized Student getStudentFromId() {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("Updating student details.");
         System.out.println("Enter student Id:");
         int studentId = scanner.nextInt();
+        scanner.nextLine();
         Student student = idMapToStudent.get(studentId);
-        return student;
-
+        if(student != null){
+            return student;
+        }else{
+            throw new StudentNotFoundException("invalid student id");
+        }
     }
 
     //update Student details.
-    public synchronized void updateStudentDetails(Student studentToUpdate){
+    public void updateStudentDetails(Student studentToUpdate){
         int studentId = studentToUpdate.getStudentId();
         String studentName = studentToUpdate.getStudentName();
 
         //remove the student from the list
-        removeStudentFromTheList(studentToUpdate);
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter student updated age:");
-        int newAge = scanner.nextInt();
-        Student updatedStudent = new Student(studentId, studentName, newAge);
+        synchronized (studentList) {
+            removeStudentFromTheList(studentToUpdate);
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter student updated age:");
+            int newAge = scanner.nextInt();
+            Student updatedStudent = new Student(studentId, studentName, newAge);
 
-        //update the map and the list with new details
-        idMapToStudent.put(studentId, updatedStudent);
-        addStudentToList(updatedStudent);
+            //update the map and the list with new details
+            idMapToStudent.put(studentId, updatedStudent);
+            addStudentToList(updatedStudent);
 
-        try{
-            studentRecordHandlingSystem.writeTheFile(studentList);
-        }catch(IOException e){
-            System.out.println("Error populating student records: " + e.getMessage());
+            try {
+                studentRecordHandlingSystem.writeTheFile(studentList);
+            } catch (IOException e) {
+                System.out.println("Error populating student records: " + e.getMessage());
+            }
         }
-
-
     }
 
     //remove existing student.
@@ -169,7 +195,5 @@ public class StudentManagementSystem  {
 
     public void displayList(){
         studentList.forEach(student -> System.out.println("Student id:" + student.getStudentId() + ", Student Name:" + student.getStudentName()+", Age:" + student.getAge()));
-
     }
-
 }
