@@ -7,7 +7,7 @@ public class StudentRecordHandlingSystem {
     private final String studentRecordBook = "studentRecordBook.txt";
 
     //Method to write details of a student to a file
-    public void appendToFile(Student student) throws IOException, NumberFormatException {
+    public void appendStudentToFile(Student student) throws IOException, NumberFormatException {
 
         FileWriter fw = null;
         int studentId = student.getStudentId();
@@ -93,7 +93,7 @@ public class StudentRecordHandlingSystem {
     }
 
     //Method to write the entire array list to the file
-    public void writeTheFile(List<Student> studentList) throws IOException{
+    public void writeStudentsToFile(List<Student> studentList) throws IOException{
 
         FileWriter fw = null;
 

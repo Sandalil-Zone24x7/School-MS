@@ -24,6 +24,7 @@ public class StudentManagementSystem  {
     class StudentUpdateSystem implements Runnable{
         public synchronized void run(){
             try{
+                System.out.println("Data required to update student details.");
                 Student studentToUpdate = getStudentFromId();
                 updateStudentDetails(studentToUpdate);
             }catch(StudentNotFoundException e){
@@ -50,8 +51,11 @@ public class StudentManagementSystem  {
     }
 
     class StudentRemovalSystem implements Runnable{
-        public void run(){
+        public synchronized void run(){
             try{
+                System.out.println("Data required to removing student details.");
+                Student student = getStudentFromId();
+                removeStudent(student);
             }catch(Exception e){
                 e.printStackTrace();
             }
@@ -124,26 +128,29 @@ public class StudentManagementSystem  {
 
 
     //Method to add a new student to the system.
-    public synchronized void addNewStudentToTheSystem(Student student){
+    public void addNewStudentToTheSystem(Student student){
         int studentId = student.getStudentId();
         //update the idMapToStudent, studentList and idSet
         addIdToTheSet(studentId);
         addStudentToList(student);
         addIdAndStudentToTheMap(studentId, student);
         //Write the new student details to the file
-        try {
-            studentRecordHandlingSystem.appendToFile(student);
-        }catch(IOException e){
-            System.out.println("hi");
-        }catch(NumberFormatException e){
-            System.out.println("Error occurred while reading the file.");
+        synchronized (student){
+            try {
+                studentRecordHandlingSystem.appendStudentToFile(student);
+            }catch(IOException e){
+                System.out.println("hi");
+            }catch(NumberFormatException e){
+                System.out.println("Error occurred while reading the file.");
+            }
         }
 
+
     }
-    //Get the student from the id using map.
+
+    //Get student id as input and return the student using the map
     private synchronized Student getStudentFromId() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Updating student details.");
         System.out.println("Enter student Id:");
         int studentId = scanner.nextInt();
         scanner.nextLine();
@@ -173,15 +180,32 @@ public class StudentManagementSystem  {
             addStudentToList(updatedStudent);
 
             try {
-                studentRecordHandlingSystem.writeTheFile(studentList);
+                studentRecordHandlingSystem.writeStudentsToFile(studentList);
             } catch (IOException e) {
-                System.out.println("Error populating student records: " + e.getMessage());
+                System.out.println("Error updating student records: " + e.getMessage());
             }
         }
     }
 
     //remove existing student.
-    public void removeStudent(){
+    public void removeStudent(Student student){
+        int studentId = student.getStudentId();
+        idSet.remove(studentId);
+        idMapToStudent.remove(studentId);
+        synchronized (studentList){
+            try{
+                studentList.remove(student);
+                studentRecordHandlingSystem.writeStudentsToFile(studentList);
+            }catch(IOException e){
+                System.out.println("Error removing student: " + e.getMessage());
+
+            }
+        }
+
+
+
+
+
     }
 
     //Getter and Setter for the student list

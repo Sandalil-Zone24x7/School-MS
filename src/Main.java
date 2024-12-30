@@ -15,24 +15,28 @@ public class Main {
 
         Thread insertionThread1 = new Thread(studentInsertionSystem);
         Thread insertionThread2 = new Thread(studentInsertionSystem);
+        Thread insertionThread3 = new Thread(studentInsertionSystem);
 
         Thread updateThread1 = new Thread(studentUpdateSystem);
         Thread updateThread2 = new Thread(studentUpdateSystem);
 
         Thread displayThread1 = new Thread(studentDisplaySystem);
-        Thread displayThread2 = new Thread(studentDisplaySystem);
+
+        Thread removalThread1 = new Thread(studentRemovalSystem);
+        Thread removalThread2 = new Thread(studentRemovalSystem);
+
 
         insertionThread1.start();
         insertionThread2.start();
+        insertionThread3.start();
 
         updateThread1.start();
         updateThread2.start();
 
         displayThread1.start();
-        displayThread2.start();
 
-//        Thread removalThread1 = new Thread(studentRemovalSystem);
-//        Thread removalThread2 = new Thread(studentRemovalSystem);
+        removalThread1.start();
+        removalThread2.start();
 
 
 
